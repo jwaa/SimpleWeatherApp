@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]>    <html class="no-js iem7"> <![endif]-->
+<!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="cleartype" content="on">
+
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+    <body>
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+            var _gaq = [["_setAccount", "UA-XXXXX-X"], ["_trackPageview"]];
+            (function (d, t) {
+                var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
+                g.async = 1;
+                g.src = ("https:" == location.protocol ? "//ssl" : "//www") + ".google-analytics.com/ga.js";
+                s.parentNode.insertBefore(g, s)
+            }(document, "script"));
+        </script>
+
+        <H3>A wind speed graphing app</h3>
+        <script language="JavaScript">
+            // connect to buienradar and request some weather data
+            var Connect = new XMLHttpRequest();
+            Connect.open("GET", "http://xml.buienradar.nl/", false);
+            Connect.send(null);
+
+            // Place the response in an XML document.
+            var xmlResponse = Connect.responseXML;
+            
+            // Extract the weather stations from the XML received document.
+            // todo: note that this will not work on all browsers
+            weerstationsXpath = "/buienradarnl/weergegevens/actueel_weer/weerstations/weerstation"
+            var allWeerstations = xmlResponse.evaluate(weerstationsXpath, xmlResponse, null, XPathResult.ANY_TYPE, null);
+            currentWeerstation = allWeerstations.iterateNext();       
+            
+            // Insert a table of weather data into the page.
+            document.write("<table BORDER =1>");
+            while (currentWeerstation) {
+                // Extract some interesting bits of weather data for each weather station.
+                var windsnelheidMS = currentWeerstation.getElementsByTagName("windsnelheidMS");
+                var windrichting = currentWeerstation.getElementsByTagName("windrichting");
+                var stationnaam = currentWeerstation.getElementsByTagName("stationnaam");
+
+                // Write the data to the page.
+                document.write("<tr><td>");
+                document.write(stationnaam[0].getAttribute('regio').toString());
+                document.write("</td><td>");
+                document.write(windsnelheidMS[0].textContent.toString());
+                document.write("</td><td>");
+                document.write(windrichting[0].textContent.toString());
+                document.write("</td><td>");
+                document.write(stationnaam[0].textContent.toString());
+                document.write("</td></tr>");
+                currentWeerstation = allWeerstations.iterateNext();
+            }
+            document.write("</table>");
+        </script>
+    </body>
+</html>
